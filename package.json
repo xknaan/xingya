@@ -1,0 +1,23 @@
+{
+  "name": "xingya-checkin",
+  "version": "1.0.0",
+  "description": "星芽打卡 - 初一学生积分打卡应用（PWA + Capacitor APK）",
+  "scripts": {
+    "build:web": "node sync-web.js",
+    "sync": "npm run build:web && cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/camera": "^8.2.6",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
+    "puppeteer-core": "^24.4.0",
+    "sql.js": "^1.13.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "yaml": "^2.9.1"
+  }
+}
