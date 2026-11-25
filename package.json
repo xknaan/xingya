@@ -13,6 +13,7 @@
     "@capacitor/core": "^8.6.2",
     "@capacitor/filesystem": "^8.1.5",
     "@capacitor/share": "^8.0.3",
+    "@capacitor/status-bar": "^8.0.2",
     "puppeteer-core": "^24.4.0",
     "sql.js": "^1.13.0"
   },

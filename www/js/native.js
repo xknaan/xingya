@@ -8,6 +8,7 @@ const Native = {
   _fs: null,
   _share: null,
   _camera: null,
+  _statusBar: null,
   isNative: false,
 
   async init() {
@@ -15,19 +16,43 @@ const Native = {
     if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
       this.isNative = true;
       this._cap = window.Capacitor;
-      this._fs = window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem;
-      this._share = window.Capacitor.Plugins && window.Capacitor.Plugins.Share;
-      this._camera = window.Capacitor.Plugins && window.Capacitor.Plugins.Camera;
+      const P = window.Capacitor.Plugins || {};
+      this._fs = P.Filesystem;
+      this._share = P.Share;
+      this._camera = P.Camera;
+      this._statusBar = P.StatusBar;
+      // 顶端状态栏高度：Android WebView 下 env(safe-area-inset-top) 常为 0，
+      // 用 StatusBar.getInfo() 读取真实高度写入 CSS 变量，供页面顶部留白。
+      await this._applyStatusBarInset();
     }
     return this.isNative;
+  },
+
+  async _applyStatusBarInset() {
+    if (!this._statusBar) return;
+    try {
+      const info = await this._statusBar.getInfo();
+      const h = Math.round(Number(info && info.height) || 0);
+      if (h > 0) document.documentElement.style.setProperty('--status-bar-h', h + 'px');
+      // 顶部为浅色渐变背景，状态栏图标用深色更清晰（DARK = 深色文字）
+      if (this._statusBar.setStyle) {
+        const StyleDark = (window.Capacitor.Plugins.StatusBar && 'DARK') || 'DARK';
+        await this._statusBar.setStyle({ style: StyleDark });
+      }
+    } catch (e) { /* 获取失败则回退到 env(safe-area-inset-top) */ }
   },
 
   /* 保存文本文件到设备（APK: 写到 Documents 并可选分享；Web: 触发下载） */
   async saveTextFile(filename, content) {
     if (this.isNative && this._fs) {
-      const { Directory } = this._cap.Plugins.Filesystem;
-      await this._fs.writeFile({ directory: Directory.Documents, path: filename, data: content, encoding: 'utf8' });
-      return { ok: true, native: true, uri: 'Documents/' + filename };
+      // Directory 是字符串枚举（'DOCUMENTS'），并非挂在 Plugins.Filesystem 上的对象，
+      // 直接解构会得到 undefined 并抛错，导致按钮"点了没反应"。这里用字符串常量。
+      try {
+        await this._fs.writeFile({ directory: 'DOCUMENTS', path: filename, data: content, encoding: 'utf8' });
+        return { ok: true, native: true, uri: 'Documents/' + filename };
+      } catch (e) {
+        return { ok: false, msg: '写入手机存储失败：' + (e && e.message ? e.message : String(e)) };
+      }
     }
     // Web 回退：Blob 下载
     try {
@@ -44,8 +69,7 @@ const Native = {
   async shareSavedFile(filename) {
     if (!this.isNative || !this._fs || !this._share) return;
     try {
-      const { Directory } = this._cap.Plugins.Filesystem;
-      const res = await this._fs.getUri({ directory: Directory.Documents, path: filename });
+      const res = await this._fs.getUri({ directory: 'DOCUMENTS', path: filename });
       await this._share.share({ title: '星芽打卡备份', text: '星芽打卡数据备份文件', url: res.uri, dialogTitle: '保存备份到' });
     } catch (e) { /* 用户取消分享属正常 */ }
   },

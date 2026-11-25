@@ -14,7 +14,7 @@ body{
   background:#f4f4f6;
   overscroll-behavior:none;
 }
-#app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;background:transparent;min-height:100dvh;padding-top:env(safe-area-inset-top)}
+#app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;background:transparent;min-height:100dvh;padding-top:var(--status-bar-h,env(safe-area-inset-top,0px))}
 button,input,textarea,select{font-family:inherit;font-size:inherit}
 button{cursor:pointer;border:none;background:none;color:inherit}
 img{max-width:100%}

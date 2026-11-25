@@ -1,5 +1,5 @@
 /* Service Worker：缓存全部资源，实现离线打开 */
-const CACHE = 'kouqin-v4';
+const CACHE = 'kouqin-v5';
 const ASSETS = [
   './',
   './index.html',

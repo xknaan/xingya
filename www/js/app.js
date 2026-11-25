@@ -601,18 +601,24 @@ document.addEventListener('click',async e=>{
     }
     /* 家长 · 数据备份与恢复 */
     case 'backup-data':{
-      const data=DB.exportBackup();
-      const content=JSON.stringify(data);
-      const fname='星芽打卡备份_'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'.json';
-      const r=await Native.saveTextFile(fname,content);
-      if(!r.ok){toast('保存失败：'+(r.msg||'请重试'));return}
-      if(Native.isNative){
-        toast('备份已保存到手机，请选择存放位置');
-        await Native.shareSavedFile(fname);
-      }else{
-        toast('备份文件已开始下载');
+      try{
+        const data=DB.exportBackup();
+        const content=JSON.stringify(data);
+        const fname='星芽打卡备份_'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'.json';
+        const r=await Native.saveTextFile(fname,content);
+        if(!r.ok){toast('保存失败：'+(r.msg||'请重试'));return}
+        if(Native.isNative){
+          toast('备份已保存到手机，请选择存放位置');
+          await Native.shareSavedFile(fname);
+        }else{
+          toast('备份文件已开始下载');
+        }
+        openBackupInfo(data);
+      }catch(err){
+        console.error('[backup]',err);
+        toast('备份失败：'+(err&&err.message?err.message:'请重试'));
       }
-      openBackupInfo(data);break;
+      break;
     }
     case 'restore-data':{
       const picked=await Native.pickTextFile();
