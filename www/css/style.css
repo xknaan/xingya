@@ -14,7 +14,7 @@ body{
   background:#f4f4f6;
   overscroll-behavior:none;
 }
-#app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;background:var(--bg);min-height:100dvh}
+#app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;background:transparent;min-height:100dvh;padding-top:env(safe-area-inset-top)}
 button,input,textarea,select{font-family:inherit;font-size:inherit}
 button{cursor:pointer;border:none;background:none;color:inherit}
 img{max-width:100%}
@@ -50,7 +50,7 @@ img{max-width:100%}
 
 /* ============ 通用布局 ============ */
 .screen{min-height:100vh;min-height:100dvh;padding-bottom:calc(74px + env(safe-area-inset-bottom))}
-.header{padding:calc(18px + env(safe-area-inset-top)) 20px 14px;color:var(--primary-deep)}
+.header{padding:18px 20px 14px;color:var(--primary-deep)}
 .header .hello{font-size:13px;opacity:.75}
 .header .title{font-size:24px;font-weight:800;margin-top:2px;letter-spacing:.5px}
 .header-row{display:flex;justify-content:space-between;align-items:flex-start}

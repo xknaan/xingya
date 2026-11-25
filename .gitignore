@@ -6,3 +6,4 @@ tests/downloads/
 gen_icons.py
 gen_android_icons.py
 gen_splash.py
+apk-release/

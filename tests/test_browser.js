@@ -155,10 +155,23 @@ async function tapText(page, text) {
     console.log('  刷新后积分:', balance2);
     if (balance2 !== '10') throw new Error('刷新后积分异常，期望10，实际' + balance2);
 
-    console.log('\n[J] 检查主题色');
-    const theme = await page.$eval('#app', el => el.className);
-    console.log('  学生端主题:', theme);
-    if (!theme.includes('student')) throw new Error('学生端主题错误');
+    console.log('\n[J] 检查主题作用域与安全区');
+    const theme = await page.$eval('body', el => el.className);
+    console.log('  body 主题:', theme);
+    if (!theme.includes('theme-student')) throw new Error('body 学生端主题错误');
+    const appTheme = await page.$eval('#app', el => el.className);
+    if (appTheme.includes('theme-')) throw new Error('主题 class 不应再挂载在 #app 上');
+    // 验证挂在 body 上的弹窗能继承 --primary 等主题变量
+    const primaryInSheet = await page.evaluate(() => {
+      const m = document.createElement('div'); m.className = 'mask'; m.id = '__testMask';
+      m.innerHTML = '<div class="sheet"><button class="btn" id="__testBtn">t</button></div>';
+      document.body.appendChild(m);
+      const v = getComputedStyle(document.getElementById('__testBtn')).getPropertyValue('--primary').trim();
+      m.remove();
+      return v;
+    });
+    console.log('  弹窗内 --primary:', primaryInSheet || '(空)');
+    if (!primaryInSheet) throw new Error('弹窗未继承到 --primary 变量');
 
     await browser.close();
     console.log('\n=== 浏览器测试全部通过 ===');

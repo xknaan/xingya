@@ -83,7 +83,10 @@ function renderLoading(){
   $app.className='theme-student';
   $app.innerHTML=`<div class="loading"><div class="spinner"></div><div class="sub">正在准备你的成长空间…</div></div>`;
 }
-function setTheme(role){ $app.className='theme-'+(role==='student'?'student':'parent'); }
+function setTheme(role){
+  document.body.classList.remove('theme-student','theme-parent');
+  document.body.classList.add('theme-'+(role==='student'?'student':'parent'));
+}
 
 /* ---------- 引导设置 ---------- */
 function renderAuth(){
@@ -667,7 +670,7 @@ document.addEventListener('click',async e=>{
     render();
   }catch(err){
     console.error(err);
-    $app.className='theme-student';
+    setTheme('student');
     $app.innerHTML=`<div class="auth"><div class="auth-card center"><div style="font-size:40px">⚠️</div>
       <div class="sheet-title">初始化失败</div><div class="note">${h(err.message||err)}<br><br>请通过本地服务器打开（而非直接双击文件）。</div></div></div>`;
   }
